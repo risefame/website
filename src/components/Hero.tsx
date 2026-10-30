@@ -1,55 +1,136 @@
+import { useEffect, useRef } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
 import { ArrowUpRight, ChevronDown, Sparkles, Smartphone, Globe, Layers, Crosshair } from 'lucide-react'
 import { LINKS } from '../config'
 import { useLang } from '../i18n'
 import { Barcode, Spec } from './ui'
 
-function ChromeSphere() {
+function MatrixSphere() {
+  const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const reduce = useReducedMotion()
+
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+
+    let animId: number
+    const size = 500
+    canvas.width = size
+    canvas.height = size
+
+    // Characters: Matrix stream, katakana, numbers, hex, RISEFAME tokens
+    const chars = '0123456789ABCDEFｦｱｳｴｵｶｷｹｺｻｼｽｾｿﾀﾂﾃﾅﾆﾇﾈﾊﾋﾎﾏﾐﾑﾒﾓﾔﾕﾗﾘﾜRISEFAME<>/{}=+*#_~'
+    const fontSize = 14
+    const columns = Math.floor(size / fontSize)
+    
+    // Each column has a drop position, speed and trail length
+    const drops: number[] = Array.from({ length: columns }, () => Math.floor(Math.random() * -60))
+    const speeds: number[] = Array.from({ length: columns }, () => 0.7 + Math.random() * 1.8)
+    const lengths: number[] = Array.from({ length: columns }, () => 10 + Math.floor(Math.random() * 18))
+
+    const draw = () => {
+      // Translucent black trail for matrix glow
+      ctx.fillStyle = 'rgba(5, 7, 10, 0.16)'
+      ctx.fillRect(0, 0, size, size)
+
+      ctx.font = `bold ${fontSize}px "Space Mono", monospace`
+
+      for (let i = 0; i < columns; i++) {
+        const char = chars.charAt(Math.floor(Math.random() * chars.length))
+        const x = i * fontSize
+        const y = drops[i] * fontSize
+
+        // Drop head shines white/yellow, trail shines in volt / hazard
+        const isHead = Math.random() > 0.82
+        if (isHead) {
+          ctx.fillStyle = '#ffffff'
+          ctx.shadowColor = '#FFE600'
+          ctx.shadowBlur = 10
+        } else if (i % 4 === 0) {
+          ctx.fillStyle = '#FFE600' // Hazard yellow
+          ctx.shadowColor = '#FFE600'
+          ctx.shadowBlur = 6
+        } else {
+          ctx.fillStyle = '#CCFF00' // Acid volt
+          ctx.shadowColor = '#00FF66'
+          ctx.shadowBlur = 4
+        }
+
+        ctx.fillText(char, x, y)
+        ctx.shadowBlur = 0
+
+        // Reset column randomly after falling off the canvas
+        if (y > size + 80 && Math.random() > 0.975) {
+          drops[i] = -lengths[i]
+        }
+        drops[i] += speeds[i]
+      }
+
+      animId = requestAnimationFrame(draw)
+    }
+
+    draw()
+
+    return () => {
+      cancelAnimationFrame(animId)
+    }
+  }, [])
+
   return (
-    <motion.svg
-      viewBox="0 0 600 600"
-      className="relative z-10 w-[300px] h-[300px] sm:w-[380px] sm:h-[380px] lg:w-[420px] lg:h-[420px] select-none filter drop-shadow-[0_20px_50px_rgba(0,0,0,0.9)]"
-      aria-hidden="true"
-      animate={reduce ? undefined : { rotate: 360 }}
-      transition={{ duration: 65, ease: 'linear', repeat: Infinity }}
-    >
-      <defs>
-        <linearGradient id="ch1" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#ffffff" />
-          <stop offset="18%" stopColor="#9ba2ad" />
-          <stop offset="36%" stopColor="#14161b" />
-          <stop offset="50%" stopColor="#f5f7fa" />
-          <stop offset="68%" stopColor="#4c525d" />
-          <stop offset="84%" stopColor="#0b0c10" />
-          <stop offset="100%" stopColor="#d6dbe3" />
-        </linearGradient>
-        <radialGradient id="ch2" cx=".3" cy=".25" r=".6">
-          <stop offset="0%" stopColor="#fff" stopOpacity=".95" />
-          <stop offset="40%" stopColor="#fff" stopOpacity=".1" />
-          <stop offset="100%" stopColor="#fff" stopOpacity="0" />
-        </radialGradient>
-        <radialGradient id="ch3" cx=".75" cy=".85" r=".5">
-          <stop offset="0%" stopColor="#0A1F8F" stopOpacity=".95" />
-          <stop offset="100%" stopColor="#0A1F8F" stopOpacity="0" />
-        </radialGradient>
-        <filter id="melt" x="-20%" y="-20%" width="140%" height="140%">
-          <feTurbulence type="fractalNoise" baseFrequency=".012" numOctaves="2" seed="4" result="n" />
-          <feDisplacementMap in="SourceGraphic" in2="n" scale="38" />
-        </filter>
-      </defs>
-      <g filter="url(#melt)">
-        <path
-          d="M300 40c120-10 230 70 250 190 20 120-40 200-90 260-60 70-170 90-250 50C110 510 50 430 50 320 50 170 170 50 300 40z"
-          fill="url(#ch1)"
+    <div className="relative z-10 w-[290px] h-[290px] sm:w-[370px] sm:h-[370px] lg:w-[410px] lg:h-[410px] select-none flex items-center justify-center">
+      {/* Outer 3D Sphere Housing with round clipping */}
+      <div className="relative w-full h-full rounded-full overflow-hidden border-2 border-white/25 shadow-[0_0_60px_rgba(204,255,0,0.25),0_25px_60px_rgba(0,0,0,0.95)] bg-[#040507]">
+        
+        {/* Matrix Digital Rain Canvas */}
+        <canvas
+          ref={canvasRef}
+          className="absolute inset-0 w-full h-full object-cover mix-blend-screen opacity-95"
         />
-        <path
-          d="M300 40c120-10 230 70 250 190 20 120-40 200-90 260-60 70-170 90-250 50C110 510 50 430 50 320 50 170 170 50 300 40z"
-          fill="url(#ch3)"
+
+        {/* 3D Rotating Celestial Wireframe / Latitude & Longitude Grid */}
+        <motion.svg
+          viewBox="0 0 100 100"
+          className="absolute inset-0 w-full h-full pointer-events-none opacity-45 mix-blend-screen"
+          animate={reduce ? undefined : { rotate: 360 }}
+          transition={{ duration: 40, ease: 'linear', repeat: Infinity }}
+        >
+          {/* Outer edge ring */}
+          <circle cx="50" cy="50" r="49" fill="none" stroke="#ffffff" strokeWidth="0.8" strokeDasharray="3,3" opacity="0.6" />
+          {/* Longitude ellipses */}
+          <ellipse cx="50" cy="50" rx="49" ry="32" fill="none" stroke="#FFE600" strokeWidth="0.6" strokeDasharray="4,4" />
+          <ellipse cx="50" cy="50" rx="49" ry="16" fill="none" stroke="#CCFF00" strokeWidth="0.6" strokeDasharray="2,2" />
+          <line x1="1" y1="50" x2="99" y2="50" stroke="#CCFF00" strokeWidth="0.5" strokeDasharray="2,3" />
+          {/* Latitude ellipses */}
+          <ellipse cx="50" cy="50" rx="32" ry="49" fill="none" stroke="#ffffff" strokeWidth="0.6" strokeDasharray="4,4" />
+          <ellipse cx="50" cy="50" rx="16" ry="49" fill="none" stroke="#FFE600" strokeWidth="0.6" strokeDasharray="2,2" />
+          <line x1="50" y1="1" x2="50" y2="99" stroke="#FFE600" strokeWidth="0.5" strokeDasharray="2,3" />
+        </motion.svg>
+
+        {/* Liquid Chrome Glare / Specular Highlight (Sweeping for metallic 3D sheen) */}
+        <motion.div
+          animate={reduce ? undefined : { rotate: -360 }}
+          transition={{ duration: 30, ease: 'linear', repeat: Infinity }}
+          className="pointer-events-none absolute -inset-[20%] opacity-35 mix-blend-color-dodge"
+          style={{
+            background: 'conic-gradient(from 0deg, transparent 0deg, rgba(255,255,255,0.85) 60deg, transparent 120deg, rgba(204,255,0,0.5) 180deg, transparent 240deg, rgba(255,255,255,0.7) 300deg, transparent 360deg)'
+          }}
         />
-        <ellipse cx="210" cy="170" rx="120" ry="60" fill="url(#ch2)" transform="rotate(-28 210 170)" />
-      </g>
-    </motion.svg>
+
+        {/* 3D Spherical Convex Lens & Deep Rim Shading (real ball volume) */}
+        <div
+          className="pointer-events-none absolute inset-0 rounded-full"
+          style={{
+            background: 'radial-gradient(circle at 30% 25%, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.08) 32%, transparent 65%), radial-gradient(circle at 75% 75%, rgba(10,31,143,0.45) 0%, transparent 60%)',
+            boxShadow: 'inset 0 0 55px rgba(0,0,0,0.98), inset 0 0 20px rgba(204,255,0,0.35)',
+          }}
+        />
+
+        {/* Outer Liquid Chrome Metallic Rim */}
+        <div className="pointer-events-none absolute inset-0 rounded-full border-[2.5px] border-white/40 shadow-inner" />
+      </div>
+    </div>
   )
 }
 
@@ -84,7 +165,7 @@ function DigitalCore() {
           </div>
         </div>
 
-        {/* Central Display: Liquid Chrome Sphere + Orbital Rings */}
+        {/* Central Display: Matrix Sphere + Orbital Rings */}
         <div className="relative my-4 flex items-center justify-center overflow-visible py-4">
           
           {/* Orbital Ring 1 (outer dashed) */}
@@ -102,8 +183,8 @@ function DigitalCore() {
             style={{ transform: 'rotate(-20deg)' }}
           />
 
-          {/* The Hypnotic Liquid Chrome Sphere */}
-          <ChromeSphere />
+          {/* The Matrix Sphere Artifact */}
+          <MatrixSphere />
 
           {/* Orbital Chip 1: Top-Right (Mobile Apps) */}
           <motion.div
@@ -199,7 +280,7 @@ export default function Hero() {
           <Barcode seed={11} className="h-6 w-28 text-white" />
         </div>
 
-        {/* Main Grid: Headline Left + Digital Core Artifact Right */}
+        {/* Main Grid: Headline Left + Matrix Sphere Artifact Right */}
         <div className="grid gap-12 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
           <div>
             <h1 className={`font-display uppercase leading-[.88] tracking-tighter ${size}`}>
@@ -232,7 +313,7 @@ export default function Hero() {
             </div>
           </div>
 
-          {/* The Liquid Chrome Digital Core with Orbital HUD chips */}
+          {/* The Matrix Digital Core Artifact */}
           <div className="flex justify-center lg:justify-end">
             <DigitalCore />
           </div>
