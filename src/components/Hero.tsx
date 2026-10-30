@@ -108,7 +108,7 @@ function MatrixSphere() {
           <line x1="50" y1="1" x2="50" y2="99" stroke="#FFE600" strokeWidth="0.5" strokeDasharray="2,3" />
         </motion.svg>
 
-        {/* Liquid Chrome Glare / Specular Highlight (Sweeping for metallic 3D sheen) */}
+        {/* Liquid Chrome Glare / Specular Highlight */}
         <motion.div
           animate={reduce ? undefined : { rotate: -360 }}
           transition={{ duration: 30, ease: 'linear', repeat: Infinity }}
@@ -118,7 +118,7 @@ function MatrixSphere() {
           }}
         />
 
-        {/* 3D Spherical Convex Lens & Deep Rim Shading (real ball volume) */}
+        {/* 3D Spherical Convex Lens & Deep Rim Shading */}
         <div
           className="pointer-events-none absolute inset-0 rounded-full"
           style={{
@@ -274,7 +274,7 @@ export default function Hero() {
         {/* Technical Header Line */}
         <div className="mb-8 flex flex-wrap items-center gap-3">
           <Spec className="text-hazard">[RF-SPEC // 2026]</Spec>
-          <span className="sticker font-bold text-black bg-hazard">
+          <span className="bg-hazard text-black font-mono font-bold text-[11px] uppercase tracking-wider px-2.5 py-0.5">
             {h.serviceBadge}
           </span>
           <Barcode seed={11} className="h-6 w-28 text-white" />
