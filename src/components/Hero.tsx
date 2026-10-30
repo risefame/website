@@ -1,5 +1,5 @@
 import { motion, useReducedMotion } from 'framer-motion'
-import { ArrowUpRight, ChevronDown, Smartphone, Globe, Layers, Cpu, ShieldCheck, Sparkles, Terminal } from 'lucide-react'
+import { ArrowUpRight, ChevronDown, Smartphone, Globe, Layers, ShieldCheck, Sparkles, Terminal } from 'lucide-react'
 import { LINKS } from '../config'
 import { useLang } from '../i18n'
 import { Barcode, Spec } from './ui'
