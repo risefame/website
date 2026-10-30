@@ -15,7 +15,7 @@ export interface CaseItem {
 export interface Dict {
   meta: { title: string; description: string }
   header: { status: string; tg: string; gh: string }
-  hero: { line1: string; line2: string; line3: string; sub: string; ctaPrimary: string; ctaSecondary: string; tag: string }
+  hero: { line1: string; line2: string; line3: string; serviceBadge: string; sub: string; ctaPrimary: string; ctaSecondary: string; tag: string }
   marquee: string[]
   work: { title: string; sub: string; specLabel: string; stackLabel: string; cases: CaseItem[] }
   manifesto: { title: string; items: { n: string; title: string; body: string; stamp: string }[] }
@@ -32,7 +32,8 @@ const ru: Dict = {
     line1: 'ИНЖЕНЕРИЯ',
     line2: 'ЦИФРОВОГО',
     line3: 'ДОМИНИРОВАНИЯ',
-    sub: 'Продакшн-код без посредников. Вы говорите с теми, кто пишет систему, — и получаете работающий продукт, а не презентацию.',
+    serviceBadge: 'РАЗРАБОТКА: МОБИЛЬНЫЕ ПРИЛОЖЕНИЯ // ВЕБ-СЕРВИСЫ // СЛОЖНЫЕ САЙТЫ',
+    sub: 'Ноль аккаунт-менеджеров. Ноль пустых слайдов. Прямой контакт с инженерами: вы получаете боевую систему на сервере, пока агентства продают вам созвоны в Zoom.',
     ctaPrimary: 'Запустить проект',
     ctaSecondary: 'Смотреть кейсы',
     tag: 'Лаборатория цифрового продакшна и креативной инженерии',
@@ -103,7 +104,8 @@ const en: Dict = {
     line1: 'ENGINEERING',
     line2: 'UNFAIR DIGITAL',
     line3: 'ADVANTAGE',
-    sub: 'Production code, zero middlemen. You talk to the people who write the system — and get a working product, not a slide deck.',
+    serviceBadge: 'DEV: MOBILE APPS // WEB PLATFORMS // FULL-CYCLE WEBSITES',
+    sub: 'Zero middlemen. Zero pitch decks. Direct engineering: you get production-grade software while agencies sell you Zoom meetings.',
     ctaPrimary: 'Start a project',
     ctaSecondary: 'View cases',
     tag: 'Digital Production & Creative Engineering Lab',
