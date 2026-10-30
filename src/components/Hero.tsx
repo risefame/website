@@ -1,109 +1,178 @@
 import { motion, useReducedMotion } from 'framer-motion'
-import { ArrowUpRight, ChevronDown, Smartphone, Globe, Layers, ShieldCheck, Sparkles, Terminal } from 'lucide-react'
+import { ArrowUpRight, ChevronDown, Sparkles, Smartphone, Globe, Layers, Crosshair } from 'lucide-react'
 import { LINKS } from '../config'
 import { useLang } from '../i18n'
 import { Barcode, Spec } from './ui'
 
-function ProductionConsole() {
+function ChromeSphere() {
+  const reduce = useReducedMotion()
+  return (
+    <motion.svg
+      viewBox="0 0 600 600"
+      className="relative z-10 w-[300px] h-[300px] sm:w-[380px] sm:h-[380px] lg:w-[420px] lg:h-[420px] select-none filter drop-shadow-[0_20px_50px_rgba(0,0,0,0.9)]"
+      aria-hidden="true"
+      animate={reduce ? undefined : { rotate: 360 }}
+      transition={{ duration: 65, ease: 'linear', repeat: Infinity }}
+    >
+      <defs>
+        <linearGradient id="ch1" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#ffffff" />
+          <stop offset="18%" stopColor="#9ba2ad" />
+          <stop offset="36%" stopColor="#14161b" />
+          <stop offset="50%" stopColor="#f5f7fa" />
+          <stop offset="68%" stopColor="#4c525d" />
+          <stop offset="84%" stopColor="#0b0c10" />
+          <stop offset="100%" stopColor="#d6dbe3" />
+        </linearGradient>
+        <radialGradient id="ch2" cx=".3" cy=".25" r=".6">
+          <stop offset="0%" stopColor="#fff" stopOpacity=".95" />
+          <stop offset="40%" stopColor="#fff" stopOpacity=".1" />
+          <stop offset="100%" stopColor="#fff" stopOpacity="0" />
+        </radialGradient>
+        <radialGradient id="ch3" cx=".75" cy=".85" r=".5">
+          <stop offset="0%" stopColor="#0A1F8F" stopOpacity=".95" />
+          <stop offset="100%" stopColor="#0A1F8F" stopOpacity="0" />
+        </radialGradient>
+        <filter id="melt" x="-20%" y="-20%" width="140%" height="140%">
+          <feTurbulence type="fractalNoise" baseFrequency=".012" numOctaves="2" seed="4" result="n" />
+          <feDisplacementMap in="SourceGraphic" in2="n" scale="38" />
+        </filter>
+      </defs>
+      <g filter="url(#melt)">
+        <path
+          d="M300 40c120-10 230 70 250 190 20 120-40 200-90 260-60 70-170 90-250 50C110 510 50 430 50 320 50 170 170 50 300 40z"
+          fill="url(#ch1)"
+        />
+        <path
+          d="M300 40c120-10 230 70 250 190 20 120-40 200-90 260-60 70-170 90-250 50C110 510 50 430 50 320 50 170 170 50 300 40z"
+          fill="url(#ch3)"
+        />
+        <ellipse cx="210" cy="170" rx="120" ry="60" fill="url(#ch2)" transform="rotate(-28 210 170)" />
+      </g>
+    </motion.svg>
+  )
+}
+
+function DigitalCore() {
   const reduce = useReducedMotion()
   const { t } = useLang()
-  const c = t.hero.console
+  const c = t.hero.coreEngine
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.8, ease: [0.2, 0.8, 0.2, 1] }}
-      className="relative mx-auto w-full max-w-[480px] select-none lg:max-w-[520px]"
-    >
-      {/* Liquid chrome ambient glow */}
-      <div className="pointer-events-none absolute -inset-4 rounded-3xl bg-gradient-to-tr from-cobalt/40 via-hazard/20 to-volt/25 blur-3xl opacity-70" />
+    <div className="relative mx-auto flex w-full max-w-[560px] items-center justify-center p-4 lg:max-w-[620px]">
+      {/* Liquid chrome & cobalt ambient aura */}
+      <div className="pointer-events-none absolute -inset-8 rounded-full bg-gradient-to-tr from-cobalt/35 via-hazard/15 to-volt/20 blur-3xl opacity-75" />
 
-      {/* Main Console Frame */}
-      <motion.div
-        animate={reduce ? undefined : { y: [-4, 4, -4] }}
-        transition={{ duration: 7, ease: 'easeInOut', repeat: Infinity }}
-        className="relative rounded-2xl border-2 border-white/25 bg-[#09090b] p-5 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.95)] backdrop-blur-md"
-      >
-        {/* Top Header / Control Bar */}
-        <div className="flex items-center justify-between border-b border-white/15 pb-3">
+      {/* Cybernetic HUD Reticle / Chamber Box */}
+      <div className="relative w-full rounded-3xl border border-white/15 bg-neutral-950/70 p-6 backdrop-blur-md shadow-[0_25px_60px_-15px_rgba(0,0,0,0.95)]">
+        
+        {/* Corner Crosshairs */}
+        <div className="pointer-events-none absolute left-3 top-3 text-white/30"><Crosshair size={14} /></div>
+        <div className="pointer-events-none absolute right-3 top-3 text-white/30"><Crosshair size={14} /></div>
+        <div className="pointer-events-none absolute left-3 bottom-3 text-white/30"><Crosshair size={14} /></div>
+        <div className="pointer-events-none absolute right-3 bottom-3 text-white/30"><Crosshair size={14} /></div>
+
+        {/* Top HUD Telemetry */}
+        <div className="flex items-center justify-between border-b border-white/10 pb-3 font-mono text-[10px]">
           <div className="flex items-center gap-2">
-            <span className="h-2.5 w-2.5 rounded-full bg-volt animate-ping" />
-            <span className="font-mono text-xs font-bold tracking-wider text-white">
-              {c.title}
-            </span>
+            <span className="h-2 w-2 rounded-full bg-volt animate-ping" />
+            <span className="font-bold tracking-widest text-white">{c.status}</span>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="sticker bg-hazard text-black font-mono font-bold text-[9px] py-0.5 px-2">
-              {c.badge}
-            </span>
+          <div className="flex items-center gap-3">
+            <span className="text-white/40">{c.fps}</span>
+            <span className="sticker bg-hazard text-black font-bold text-[9px] py-0.5 px-2">{c.badge}</span>
           </div>
         </div>
 
-        {/* 3 Core Direction Cards */}
-        <div className="mt-4 space-y-2.5">
-          {c.services.map((item, idx) => (
-            <div
-              key={item.title}
-              className="group relative rounded-xl border border-white/10 bg-neutral-900/80 p-3 transition-all hover:border-hazard/60 hover:bg-neutral-900"
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2.5">
-                  <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-neutral-800 text-hazard group-hover:bg-hazard group-hover:text-black transition-colors">
-                    {idx === 0 && <Smartphone size={15} />}
-                    {idx === 1 && <Globe size={15} />}
-                    {idx === 2 && <Layers size={15} />}
-                  </div>
-                  <div>
-                    <h4 className="font-display text-xs tracking-tight text-white uppercase group-hover:text-hazard transition-colors">
-                      {item.title}
-                    </h4>
-                    <p className="font-mono text-[10px] text-white/55">{item.sub}</p>
-                  </div>
+        {/* Central Display: Liquid Chrome Sphere + Orbital Rings */}
+        <div className="relative my-4 flex items-center justify-center overflow-visible py-4">
+          
+          {/* Orbital Ring 1 (outer dashed) */}
+          <motion.div
+            animate={reduce ? undefined : { rotate: 360 }}
+            transition={{ duration: 40, ease: 'linear', repeat: Infinity }}
+            className="pointer-events-none absolute h-[340px] w-[340px] rounded-full border border-dashed border-white/20 sm:h-[420px] sm:w-[420px]"
+          />
+
+          {/* Orbital Ring 2 (hazard-accented elliptical) */}
+          <motion.div
+            animate={reduce ? undefined : { rotate: -360 }}
+            transition={{ duration: 55, ease: 'linear', repeat: Infinity }}
+            className="pointer-events-none absolute h-[290px] w-[370px] rounded-full border border-hazard/30 sm:h-[350px] sm:w-[450px]"
+            style={{ transform: 'rotate(-20deg)' }}
+          />
+
+          {/* The Hypnotic Liquid Chrome Sphere */}
+          <ChromeSphere />
+
+          {/* Orbital Chip 1: Top-Right (Mobile Apps) */}
+          <motion.div
+            animate={reduce ? undefined : { y: [-6, 6, -6] }}
+            transition={{ duration: 5, ease: 'easeInOut', repeat: Infinity }}
+            className="absolute -top-1 right-0 sm:right-2 z-20 max-w-[210px] rounded-xl border border-hazard/60 bg-[#0d0e12]/90 p-2.5 shadow-xl backdrop-blur-md"
+          >
+            <div className="flex items-center gap-2">
+              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded bg-hazard/20 text-hazard">
+                <Smartphone size={13} />
+              </div>
+              <div>
+                <div className="font-display text-[11px] uppercase tracking-tight text-white flex items-center gap-1.5">
+                  <span className="h-1.5 w-1.5 rounded-full bg-volt animate-pulse" />
+                  {c.chips[0].title}
                 </div>
-                <span className="font-mono text-[9px] font-bold tracking-widest text-volt border border-volt/30 px-1.5 py-0.5 rounded">
-                  {item.tag}
-                </span>
+                <div className="font-mono text-[8px] text-white/50">{c.chips[0].tech}</div>
               </div>
             </div>
-          ))}
-        </div>
+          </motion.div>
 
-        {/* Terminal Compilation Viewport */}
-        <div className="mt-4 rounded-xl border border-white/10 bg-black/90 p-3 font-mono text-[10px] leading-relaxed">
-          <div className="flex items-center justify-between text-white/40 pb-1.5 border-b border-white/10 mb-2">
-            <span className="flex items-center gap-1.5">
-              <Terminal size={11} className="text-volt" /> PIPELINE_OUTPUT
-            </span>
-            <span className="text-volt">LIVE // 0ms</span>
-          </div>
-          <p className="text-white/80">{c.pipeline}</p>
-          <p className="text-hazard/90 mt-1">&gt; CLIENTS: iOS • ANDROID • WEB (PWA &amp; SSR)</p>
-          <p className="text-volt/90 mt-1 flex items-center gap-1">
-            <Sparkles size={10} /> &gt; SYSTEM STATUS: READY TO DEPLOY
-            <span className="inline-block w-1.5 h-3 bg-volt animate-pulse ml-1" />
-          </p>
-        </div>
-
-        {/* Metrics Grid */}
-        <div className="mt-4 grid grid-cols-3 gap-2 border-t border-white/15 pt-3 text-center">
-          {c.specs.map(([label, val]) => (
-            <div key={label} className="rounded-lg bg-neutral-950 p-2 border border-white/5">
-              <span className="block font-mono text-[8px] tracking-wider text-white/40">{label}</span>
-              <span className="font-display text-[11px] uppercase tracking-tight text-hazard mt-0.5 block">{val}</span>
+          {/* Orbital Chip 2: Mid-Left (Web Platforms & SaaS) */}
+          <motion.div
+            animate={reduce ? undefined : { y: [6, -6, 6] }}
+            transition={{ duration: 6, delay: 0.8, ease: 'easeInOut', repeat: Infinity }}
+            className="absolute top-1/2 -left-2 sm:-left-4 -translate-y-1/2 z-20 max-w-[220px] rounded-xl border border-volt/60 bg-[#0d0e12]/90 p-2.5 shadow-xl backdrop-blur-md"
+          >
+            <div className="flex items-center gap-2">
+              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded bg-volt/20 text-volt">
+                <Globe size={13} />
+              </div>
+              <div>
+                <div className="font-display text-[11px] uppercase tracking-tight text-white flex items-center gap-1.5">
+                  <span className="h-1.5 w-1.5 rounded-full bg-hazard animate-pulse" />
+                  {c.chips[1].title}
+                </div>
+                <div className="font-mono text-[8px] text-white/50">{c.chips[1].tech}</div>
+              </div>
             </div>
-          ))}
+          </motion.div>
+
+          {/* Orbital Chip 3: Bottom-Right (Full-Cycle Websites) */}
+          <motion.div
+            animate={reduce ? undefined : { y: [-5, 5, -5] }}
+            transition={{ duration: 5.5, delay: 1.5, ease: 'easeInOut', repeat: Infinity }}
+            className="absolute -bottom-2 right-2 sm:right-6 z-20 max-w-[220px] rounded-xl border border-white/30 bg-[#0d0e12]/90 p-2.5 shadow-xl backdrop-blur-md"
+          >
+            <div className="flex items-center gap-2">
+              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded bg-white/10 text-white">
+                <Layers size={13} />
+              </div>
+              <div>
+                <div className="font-display text-[11px] uppercase tracking-tight text-white flex items-center gap-1.5">
+                  <Sparkles size={11} className="text-volt" />
+                  {c.chips[2].title}
+                </div>
+                <div className="font-mono text-[8px] text-white/50">{c.chips[2].tech}</div>
+              </div>
+            </div>
+          </motion.div>
         </div>
 
-        {/* Console Footer Meta */}
-        <div className="mt-3.5 flex items-center justify-between pt-2 border-t border-dashed border-white/10 text-[9px] font-mono text-white/40">
-          <span className="flex items-center gap-1">
-            <ShieldCheck size={12} className="text-volt" /> {c.ready}
-          </span>
-          <Barcode seed={19} className="h-4 w-20 text-white/50" />
+        {/* Bottom HUD Telemetry Footer */}
+        <div className="mt-2 flex items-center justify-between border-t border-white/10 pt-3 font-mono text-[9px] text-white/40">
+          <span className="text-volt">{c.specLabel}</span>
+          <Barcode seed={27} className="h-4 w-24 text-white/50" />
         </div>
-      </motion.div>
-    </motion.div>
+      </div>
+    </div>
   )
 }
 
@@ -130,8 +199,8 @@ export default function Hero() {
           <Barcode seed={11} className="h-6 w-28 text-white" />
         </div>
 
-        {/* Main Grid: Headline Left + Console Right */}
-        <div className="grid gap-12 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
+        {/* Main Grid: Headline Left + Digital Core Artifact Right */}
+        <div className="grid gap-12 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
           <div>
             <h1 className={`font-display uppercase leading-[.88] tracking-tighter ${size}`}>
               {[h.line1, h.line2, h.line3].map((txt: string, i: number) => (
@@ -163,9 +232,9 @@ export default function Hero() {
             </div>
           </div>
 
-          {/* High-End Production Console (replaces phone & coffee) */}
+          {/* The Liquid Chrome Digital Core with Orbital HUD chips */}
           <div className="flex justify-center lg:justify-end">
-            <ProductionConsole />
+            <DigitalCore />
           </div>
         </div>
 

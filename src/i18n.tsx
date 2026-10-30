@@ -24,18 +24,12 @@ export interface Dict {
     ctaPrimary: string
     ctaSecondary: string
     tag: string
-    console: {
-      title: string
+    coreEngine: {
       status: string
+      fps: string
       badge: string
-      services: {
-        title: string
-        sub: string
-        tag: string
-      }[]
-      specs: [string, string][]
-      pipeline: string
-      ready: string
+      chips: { id: string; title: string; tech: string }[]
+      specLabel: string
     }
   }
   marquee: string[]
@@ -69,25 +63,19 @@ const ru: Dict = {
     ctaPrimary: 'Запустить проект',
     ctaSecondary: 'Смотреть кейсы',
     tag: 'Лаборатория цифрового продакшна и креативной инженерии',
-    console: {
-      title: 'RISEFAME // CORE ENGINE',
-      status: 'SYSTEM: ACTIVE',
-      badge: 'PRODUCTION READY',
-      services: [
-        { title: 'МОБИЛЬНЫЕ ПРИЛОЖЕНИЯ', sub: 'iOS & Android / Native UI / Высокая скорость', tag: 'MOBILE' },
-        { title: 'ВЕБ-СЕРВИСЫ & ПЛАТФОРМЫ', sub: 'B2B системы / Realtime синхронизация / Личные кабинеты', tag: 'SAAS' },
-        { title: 'СЛОЖНЫЕ САЙТЫ ПОД КЛЮЧ', sub: 'Эксклюзивный дизайн / Премиум-анимация / Высокие нагрузки', tag: 'WEB' },
+    coreEngine: {
+      status: 'CORE: ACTIVE',
+      fps: '60 FPS // 0ms',
+      badge: 'RISEFAME // LAB',
+      chips: [
+        { id: '01', title: 'IOS & ANDROID APPS', tech: 'REACT NATIVE • SWIFT • NATIVE UI' },
+        { id: '02', title: 'WEB PLATFORMS & SAAS', tech: 'HIGH-LOAD • REALTIME SYNC • B2B' },
+        { id: '03', title: 'FULL-CYCLE WEBSITES', tech: 'BESPOKE DESIGN • FLUID MOTION' },
       ],
-      specs: [
-        ['TARGETS', 'iOS • ANDROID • WEB'],
-        ['STACK', 'REACT • TS • SUPABASE'],
-        ['LATENCY', '0 ms REALTIME'],
-      ],
-      pipeline: '> ARCHITECTURE: TYPE-SAFE // ZERO-LATENCY // HIGH-LOAD',
-      ready: 'READY TO SHIP // BATCH 2026',
+      specLabel: 'PRODUCTION READY // 2026',
     },
   },
-  marquee: ['БЕЗ ПОСРЕДНИКОВ', 'MVP ЗА 3 НЕДЕЛИ', 'PRODUCTION GRADE', 'REALTIME', 'ЧИСТЫЙ КОД', 'МЕНЬШЕ СЛОВ'],
+  marquee: ['БЕЗ ПОСРЕДНИКОВ', 'MVP ЗА 3 НЕДЕЛИ', 'PRODUCTION GRADE', 'REALTIME', 'ЧИСТЫЙ КОД', 'ХВАТИТ СЛОВ'],
   work: {
     title: 'КЕЙСЫ',
     sub: 'Три системы, которые работают в бою.',
@@ -159,22 +147,16 @@ const en: Dict = {
     ctaPrimary: 'Start a project',
     ctaSecondary: 'View cases',
     tag: 'Digital Production & Creative Engineering Lab',
-    console: {
-      title: 'RISEFAME // CORE ENGINE',
-      status: 'SYSTEM: ACTIVE',
-      badge: 'PRODUCTION READY',
-      services: [
-        { title: 'MOBILE APPLICATIONS', sub: 'iOS & Android / Native Fluidity / High Speed', tag: 'MOBILE' },
-        { title: 'WEB PLATFORMS & SAAS', sub: 'B2B Systems / Realtime Synchronization / Client Dashboards', tag: 'SAAS' },
-        { title: 'FULL-CYCLE WEBSITES', sub: 'Bespoke Design / Fluid Motion / High-Load Architecture', tag: 'WEB' },
+    coreEngine: {
+      status: 'CORE: ACTIVE',
+      fps: '60 FPS // 0ms',
+      badge: 'RISEFAME // LAB',
+      chips: [
+        { id: '01', title: 'IOS & ANDROID APPS', tech: 'REACT NATIVE • SWIFT • NATIVE UI' },
+        { id: '02', title: 'WEB PLATFORMS & SAAS', tech: 'HIGH-LOAD • REALTIME SYNC • B2B' },
+        { id: '03', title: 'FULL-CYCLE WEBSITES', tech: 'BESPOKE DESIGN • FLUID MOTION' },
       ],
-      specs: [
-        ['TARGETS', 'iOS • ANDROID • WEB'],
-        ['STACK', 'REACT • TS • SUPABASE'],
-        ['LATENCY', '0 ms REALTIME'],
-      ],
-      pipeline: '> ARCHITECTURE: TYPE-SAFE // ZERO-LATENCY // HIGH-LOAD',
-      ready: 'READY TO SHIP // BATCH 2026',
+      specLabel: 'PRODUCTION READY // 2026',
     },
   },
   marquee: ['NO MIDDLEMEN', 'MVP IN 3 WEEKS', 'PRODUCTION GRADE', 'REALTIME', 'CLEAN CODE', 'TALK IS CHEAP'],
