@@ -55,7 +55,7 @@ function Card({ c, i, specLabel, stackLabel }: { c: CaseItem; i: number; specLab
       </div>
 
       <div className={`flex items-center justify-between gap-4 border-t-2 px-5 py-3 md:px-10 ${th.rule}`}>
-        <Spec>[AWGE-SPEC // 2026]</Spec>
+        <Spec>[RF-SPEC // 2026]</Spec>
         <Barcode seed={i * 5 + 3} className="h-7 w-32" />
       </div>
     </motion.article>

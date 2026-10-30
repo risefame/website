@@ -15,17 +15,49 @@ export interface CaseItem {
 export interface Dict {
   meta: { title: string; description: string }
   header: { status: string; tg: string; gh: string }
-  hero: { line1: string; line2: string; line3: string; serviceBadge: string; sub: string; ctaPrimary: string; ctaSecondary: string; tag: string }
+  hero: {
+    line1: string
+    line2: string
+    line3: string
+    serviceBadge: string
+    sub: string
+    ctaPrimary: string
+    ctaSecondary: string
+    tag: string
+    console: {
+      title: string
+      status: string
+      badge: string
+      services: {
+        title: string
+        sub: string
+        tag: string
+      }[]
+      specs: [string, string][]
+      pipeline: string
+      ready: string
+    }
+  }
   marquee: string[]
   work: { title: string; sub: string; specLabel: string; stackLabel: string; cases: CaseItem[] }
   manifesto: { title: string; items: { n: string; title: string; body: string; stamp: string }[] }
-  footer: { big1: string; big2: string; sub: string; tg: string; gh: string; copy: string; copied: string; rights: string }
+  footer: {
+    contactSpec: string
+    big1: string
+    big2: string
+    sub: string
+    tg: string
+    gh: string
+    copy: string
+    copied: string
+    rights: string
+  }
 }
 
 const ru: Dict = {
   meta: {
     title: 'RISEFAME // LAB — Цифровой продакшн и креативная инженерия',
-    description: 'RISEFAME // LAB — лаборатория цифрового продакшна и креативной инженерии. Разработка без посредников, MVP за 3 недели.',
+    description: 'RISEFAME // LAB — лаборатория цифрового продакшна и креативной инженерии. Разработка мобильных приложений, веб-сервисов и сложных сайтов без посредников.',
   },
   header: { status: 'SYSTEM ACTIVE / WORLDWIDE', tg: 'Telegram', gh: 'GitHub' },
   hero: {
@@ -37,8 +69,25 @@ const ru: Dict = {
     ctaPrimary: 'Запустить проект',
     ctaSecondary: 'Смотреть кейсы',
     tag: 'Лаборатория цифрового продакшна и креативной инженерии',
+    console: {
+      title: 'RISEFAME // CORE ENGINE',
+      status: 'SYSTEM: ACTIVE',
+      badge: 'PRODUCTION READY',
+      services: [
+        { title: 'МОБИЛЬНЫЕ ПРИЛОЖЕНИЯ', sub: 'iOS & Android / Native UI / Высокая скорость', tag: 'MOBILE' },
+        { title: 'ВЕБ-СЕРВИСЫ & ПЛАТФОРМЫ', sub: 'B2B системы / Realtime синхронизация / Личные кабинеты', tag: 'SAAS' },
+        { title: 'СЛОЖНЫЕ САЙТЫ ПОД КЛЮЧ', sub: 'Эксклюзивный дизайн / Премиум-анимация / Высокие нагрузки', tag: 'WEB' },
+      ],
+      specs: [
+        ['TARGETS', 'iOS • ANDROID • WEB'],
+        ['STACK', 'REACT • TS • SUPABASE'],
+        ['LATENCY', '0 ms REALTIME'],
+      ],
+      pipeline: '> ARCHITECTURE: TYPE-SAFE // ZERO-LATENCY // HIGH-LOAD',
+      ready: 'READY TO SHIP // BATCH 2026',
+    },
   },
-  marquee: ['БЕЗ ПОСРЕДНИКОВ', 'MVP ЗА 3 НЕДЕЛИ', 'PRODUCTION GRADE', 'REALTIME', 'ЧИСТЫЙ КОД', 'TALK IS CHEAP'],
+  marquee: ['БЕЗ ПОСРЕДНИКОВ', 'MVP ЗА 3 НЕДЕЛИ', 'PRODUCTION GRADE', 'REALTIME', 'ЧИСТЫЙ КОД', 'МЕНЬШЕ СЛОВ'],
   work: {
     title: 'КЕЙСЫ',
     sub: 'Три системы, которые работают в бою.',
@@ -83,8 +132,9 @@ const ru: Dict = {
     ],
   },
   footer: {
-    big1: 'TALK IS CHEAP.',
-    big2: "LET'S BUILD.",
+    contactSpec: '[RF-SPEC // 2026] — КОНТАКТЫ',
+    big1: 'ХВАТИТ СЛОВ.',
+    big2: 'ПОРА СТРОИТЬ.',
     sub: 'Напишите нам. Ответим по делу и быстро.',
     tg: 'Написать в Telegram',
     gh: 'GitHub',
@@ -97,7 +147,7 @@ const ru: Dict = {
 const en: Dict = {
   meta: {
     title: 'RISEFAME // LAB — Digital Production & Creative Engineering',
-    description: 'RISEFAME // LAB — Digital Production & Creative Engineering Lab. Direct development, no middlemen, MVP in 3 weeks.',
+    description: 'RISEFAME // LAB — Digital Production & Creative Engineering Lab. Direct development of mobile apps, web platforms and high-end websites, no middlemen, MVP in 3 weeks.',
   },
   header: { status: 'SYSTEM ACTIVE / WORLDWIDE', tg: 'Telegram', gh: 'GitHub' },
   hero: {
@@ -109,6 +159,23 @@ const en: Dict = {
     ctaPrimary: 'Start a project',
     ctaSecondary: 'View cases',
     tag: 'Digital Production & Creative Engineering Lab',
+    console: {
+      title: 'RISEFAME // CORE ENGINE',
+      status: 'SYSTEM: ACTIVE',
+      badge: 'PRODUCTION READY',
+      services: [
+        { title: 'MOBILE APPLICATIONS', sub: 'iOS & Android / Native Fluidity / High Speed', tag: 'MOBILE' },
+        { title: 'WEB PLATFORMS & SAAS', sub: 'B2B Systems / Realtime Synchronization / Client Dashboards', tag: 'SAAS' },
+        { title: 'FULL-CYCLE WEBSITES', sub: 'Bespoke Design / Fluid Motion / High-Load Architecture', tag: 'WEB' },
+      ],
+      specs: [
+        ['TARGETS', 'iOS • ANDROID • WEB'],
+        ['STACK', 'REACT • TS • SUPABASE'],
+        ['LATENCY', '0 ms REALTIME'],
+      ],
+      pipeline: '> ARCHITECTURE: TYPE-SAFE // ZERO-LATENCY // HIGH-LOAD',
+      ready: 'READY TO SHIP // BATCH 2026',
+    },
   },
   marquee: ['NO MIDDLEMEN', 'MVP IN 3 WEEKS', 'PRODUCTION GRADE', 'REALTIME', 'CLEAN CODE', 'TALK IS CHEAP'],
   work: {
@@ -155,6 +222,7 @@ const en: Dict = {
     ],
   },
   footer: {
+    contactSpec: '[RF-SPEC // 2026] — CONTACT',
     big1: 'TALK IS CHEAP.',
     big2: "LET'S BUILD.",
     sub: 'Message us. We reply fast and to the point.',

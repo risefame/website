@@ -1,124 +1,106 @@
 import { motion, useReducedMotion } from 'framer-motion'
-import { ArrowUpRight, ChevronDown, Wifi, Battery, Clock, Coffee, QrCode, CheckCircle2, Sparkles } from 'lucide-react'
+import { ArrowUpRight, ChevronDown, Smartphone, Globe, Layers, Cpu, ShieldCheck, Sparkles, Terminal } from 'lucide-react'
 import { LINKS } from '../config'
 import { useLang } from '../i18n'
 import { Barcode, Spec } from './ui'
 
-function AppPhoneMockup() {
+function ProductionConsole() {
   const reduce = useReducedMotion()
+  const { t } = useLang()
+  const c = t.hero.console
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8, ease: [0.2, 0.8, 0.2, 1] }}
-      className="relative mx-auto w-full max-w-[340px] select-none lg:max-w-[380px]"
+      className="relative mx-auto w-full max-w-[480px] select-none lg:max-w-[520px]"
     >
       {/* Liquid chrome ambient glow */}
-      <div className="pointer-events-none absolute -inset-4 rounded-[50px] bg-gradient-to-tr from-cobalt/40 via-hazard/20 to-volt/30 blur-2xl opacity-70" />
+      <div className="pointer-events-none absolute -inset-4 rounded-3xl bg-gradient-to-tr from-cobalt/40 via-hazard/20 to-volt/25 blur-3xl opacity-70" />
 
-      {/* Chrome Device Chassis */}
+      {/* Main Console Frame */}
       <motion.div
-        animate={reduce ? undefined : { y: [-6, 6, -6] }}
-        transition={{ duration: 6, ease: 'easeInOut', repeat: Infinity }}
-        className="relative rounded-[44px] p-[2.5px] bg-gradient-to-b from-white via-steel to-[#15171e] shadow-[0_30px_70px_-15px_rgba(0,0,0,0.9),0_0_0_1px_rgba(255,255,255,0.25)]"
+        animate={reduce ? undefined : { y: [-4, 4, -4] }}
+        transition={{ duration: 7, ease: 'easeInOut', repeat: Infinity }}
+        className="relative rounded-2xl border-2 border-white/25 bg-[#09090b] p-5 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.95)] backdrop-blur-md"
       >
-        {/* Screen Bezel */}
-        <div className="relative overflow-hidden rounded-[41px] bg-[#070708] p-4 border border-white/10">
-          
-          {/* Dynamic Island */}
-          <div className="absolute top-2.5 left-1/2 -translate-x-1/2 w-28 h-5 bg-black rounded-full z-30 flex items-center justify-between px-2.5 border border-white/10 shadow-inner">
-            <span className="w-1.5 h-1.5 rounded-full bg-volt animate-ping" />
-            <span className="text-[9px] font-mono text-white/70 tracking-widest uppercase">LIVE APP</span>
-            <div className="w-2 h-2 rounded-full bg-neutral-800" />
-          </div>
-
-          {/* Status Bar */}
-          <div className="flex items-center justify-between px-2 pt-4 pb-2 text-[10px] font-mono text-white/70">
-            <span className="font-bold tracking-tight">09:41</span>
-            <div className="flex items-center gap-1.5">
-              <span className="text-[8px] bg-hazard/20 text-hazard px-1 rounded border border-hazard/40 font-mono">5G</span>
-              <Wifi size={11} />
-              <Battery size={13} className="text-volt" />
-            </div>
-          </div>
-
-          {/* App Header / Brand */}
-          <div className="mt-2 rounded-2xl bg-neutral-900/90 p-3 border border-white/10 flex items-center justify-between">
-            <div>
-              <div className="flex items-center gap-1.5">
-                <Coffee size={14} className="text-hazard" />
-                <span className="font-display text-sm tracking-tight text-white uppercase">COFFEE OS</span>
-              </div>
-              <p className="text-[10px] font-mono text-white/50 tracking-wider">PRE-ORDER // KITCHEN DISPLAY</p>
-            </div>
-            <span className="sticker text-[9px] py-0.5 px-1.5 bg-hazard text-black font-mono font-bold">#ORDER-042</span>
-          </div>
-
-          {/* Live Order Card */}
-          <div className="mt-3 rounded-2xl bg-neutral-950 border border-hazard/50 p-3.5 relative overflow-hidden shadow-lg">
-            <div className="flex justify-between items-start">
-              <div>
-                <span className="text-[9px] font-mono text-volt tracking-wider uppercase flex items-center gap-1.5 font-bold">
-                  <span className="w-1.5 h-1.5 rounded-full bg-volt animate-pulse" /> В РАБОТЕ
-                </span>
-                <h4 className="font-display text-base text-white uppercase mt-0.5 tracking-tight">FLAT WHITE</h4>
-                <p className="text-[11px] font-mono text-white/60">350 ML • ОВСЯНОЕ МОЛОКО</p>
-              </div>
-              <div className="text-right">
-                <span className="font-display text-base text-hazard">320 ₽</span>
-                <p className="text-[9px] font-mono text-white/40 uppercase">СБП ОПЛАЧЕНО</p>
-              </div>
-            </div>
-
-            {/* Preparation Progress */}
-            <div className="mt-3 space-y-1.5">
-              <div className="flex justify-between text-[10px] font-mono text-white/80">
-                <span className="flex items-center gap-1"><Clock size={11} className="text-hazard" /> ГОТОВНОСТЬ ЧЕРЕЗ:</span>
-                <span className="font-bold text-hazard">03:45 МИН</span>
-              </div>
-              <div className="w-full bg-neutral-800 rounded-full h-1.5 overflow-hidden">
-                <div className="bg-gradient-to-r from-hazard to-volt h-full rounded-full w-[72%] animate-pulse" />
-              </div>
-            </div>
-          </div>
-
-          {/* Quick Specs / Modifiers */}
-          <div className="mt-2.5 grid grid-cols-3 gap-1.5 text-center">
-            <div className="p-1.5 rounded-xl bg-neutral-900 border border-white/10">
-              <span className="block text-[8px] font-mono text-white/40">ОБЪЕМ</span>
-              <span className="text-[10px] font-bold text-white font-mono">350 ML</span>
-            </div>
-            <div className="p-1.5 rounded-xl bg-neutral-900 border border-volt/30">
-              <span className="block text-[8px] font-mono text-volt">МОЛОКО</span>
-              <span className="text-[10px] font-bold text-white font-mono">OAT</span>
-            </div>
-            <div className="p-1.5 rounded-xl bg-neutral-900 border border-white/10">
-              <span className="block text-[8px] font-mono text-white/40">САХАР</span>
-              <span className="text-[10px] font-bold text-white font-mono">0%</span>
-            </div>
-          </div>
-
-          {/* QR Action Bar */}
-          <div className="mt-3">
-            <div className="w-full py-2.5 px-3 rounded-xl bg-hazard text-black font-display text-xs uppercase tracking-tight flex items-center justify-between font-bold shadow-[0_4px_12px_rgba(255,230,0,0.3)]">
-              <span className="flex items-center gap-1.5">
-                <CheckCircle2 size={13} /> QR ДЛЯ ВЫДАЧИ
-              </span>
-              <QrCode size={15} />
-            </div>
-          </div>
-
-          {/* Device Meta Specs */}
-          <div className="mt-3 pt-2 border-t border-white/10 flex justify-between items-center text-[8px] font-mono text-white/40">
-            <span>CLIENT APP V2.4</span>
-            <span className="text-volt flex items-center gap-1">
-              <Sparkles size={9} /> LATENCY: 0ms
+        {/* Top Header / Control Bar */}
+        <div className="flex items-center justify-between border-b border-white/15 pb-3">
+          <div className="flex items-center gap-2">
+            <span className="h-2.5 w-2.5 rounded-full bg-volt animate-ping" />
+            <span className="font-mono text-xs font-bold tracking-wider text-white">
+              {c.title}
             </span>
           </div>
+          <div className="flex items-center gap-2">
+            <span className="sticker bg-hazard text-black font-mono font-bold text-[9px] py-0.5 px-2">
+              {c.badge}
+            </span>
+          </div>
+        </div>
 
-          {/* Home Indicator */}
-          <div className="w-28 h-1 bg-white/30 rounded-full mx-auto mt-2.5" />
+        {/* 3 Core Direction Cards */}
+        <div className="mt-4 space-y-2.5">
+          {c.services.map((item, idx) => (
+            <div
+              key={item.title}
+              className="group relative rounded-xl border border-white/10 bg-neutral-900/80 p-3 transition-all hover:border-hazard/60 hover:bg-neutral-900"
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-neutral-800 text-hazard group-hover:bg-hazard group-hover:text-black transition-colors">
+                    {idx === 0 && <Smartphone size={15} />}
+                    {idx === 1 && <Globe size={15} />}
+                    {idx === 2 && <Layers size={15} />}
+                  </div>
+                  <div>
+                    <h4 className="font-display text-xs tracking-tight text-white uppercase group-hover:text-hazard transition-colors">
+                      {item.title}
+                    </h4>
+                    <p className="font-mono text-[10px] text-white/55">{item.sub}</p>
+                  </div>
+                </div>
+                <span className="font-mono text-[9px] font-bold tracking-widest text-volt border border-volt/30 px-1.5 py-0.5 rounded">
+                  {item.tag}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Terminal Compilation Viewport */}
+        <div className="mt-4 rounded-xl border border-white/10 bg-black/90 p-3 font-mono text-[10px] leading-relaxed">
+          <div className="flex items-center justify-between text-white/40 pb-1.5 border-b border-white/10 mb-2">
+            <span className="flex items-center gap-1.5">
+              <Terminal size={11} className="text-volt" /> PIPELINE_OUTPUT
+            </span>
+            <span className="text-volt">LIVE // 0ms</span>
+          </div>
+          <p className="text-white/80">{c.pipeline}</p>
+          <p className="text-hazard/90 mt-1">&gt; CLIENTS: iOS • ANDROID • WEB (PWA &amp; SSR)</p>
+          <p className="text-volt/90 mt-1 flex items-center gap-1">
+            <Sparkles size={10} /> &gt; SYSTEM STATUS: READY TO DEPLOY
+            <span className="inline-block w-1.5 h-3 bg-volt animate-pulse ml-1" />
+          </p>
+        </div>
+
+        {/* Metrics Grid */}
+        <div className="mt-4 grid grid-cols-3 gap-2 border-t border-white/15 pt-3 text-center">
+          {c.specs.map(([label, val]) => (
+            <div key={label} className="rounded-lg bg-neutral-950 p-2 border border-white/5">
+              <span className="block font-mono text-[8px] tracking-wider text-white/40">{label}</span>
+              <span className="font-display text-[11px] uppercase tracking-tight text-hazard mt-0.5 block">{val}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* Console Footer Meta */}
+        <div className="mt-3.5 flex items-center justify-between pt-2 border-t border-dashed border-white/10 text-[9px] font-mono text-white/40">
+          <span className="flex items-center gap-1">
+            <ShieldCheck size={12} className="text-volt" /> {c.ready}
+          </span>
+          <Barcode seed={19} className="h-4 w-20 text-white/50" />
         </div>
       </motion.div>
     </motion.div>
@@ -141,15 +123,15 @@ export default function Hero() {
         
         {/* Technical Header Line */}
         <div className="mb-8 flex flex-wrap items-center gap-3">
-          <Spec className="text-hazard">[AWGE-SPEC // 2026]</Spec>
+          <Spec className="text-hazard">[RF-SPEC // 2026]</Spec>
           <span className="sticker font-bold text-black bg-hazard">
             {h.serviceBadge}
           </span>
           <Barcode seed={11} className="h-6 w-28 text-white" />
         </div>
 
-        {/* Main Grid: Headline Left + Phone Mockup Right */}
-        <div className="grid gap-12 lg:grid-cols-[1.25fr_0.75fr] lg:items-center">
+        {/* Main Grid: Headline Left + Console Right */}
+        <div className="grid gap-12 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
           <div>
             <h1 className={`font-display uppercase leading-[.88] tracking-tighter ${size}`}>
               {[h.line1, h.line2, h.line3].map((txt: string, i: number) => (
@@ -181,9 +163,9 @@ export default function Hero() {
             </div>
           </div>
 
-          {/* Interactive Phone Mockup */}
+          {/* High-End Production Console (replaces phone & coffee) */}
           <div className="flex justify-center lg:justify-end">
-            <AppPhoneMockup />
+            <ProductionConsole />
           </div>
         </div>
 

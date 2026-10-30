@@ -27,7 +27,7 @@ export default function Footer() {
   return (
     <footer id="contact" className="relative overflow-hidden bg-hazard text-black">
       <div className="mx-auto max-w-[1500px] px-4 pb-8 pt-20 md:px-8 md:pt-28">
-        <Spec>[AWGE-SPEC // 2026] — CONTACT</Spec>
+        <Spec>{f.contactSpec}</Spec>
         <p className="mt-6 font-display text-[clamp(2.6rem,10.5vw,10.5rem)] uppercase leading-[.86] tracking-tighter">
           {f.big1}<br />{f.big2}
         </p>
