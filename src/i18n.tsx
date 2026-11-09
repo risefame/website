@@ -10,6 +10,7 @@ export interface CaseItem {
   specs: [string, string][]
   tags: string[]
   badge: string
+  details: { lead: string; points: string[]; url?: string }
 }
 
 export interface Dict {
@@ -33,7 +34,18 @@ export interface Dict {
     }
   }
   marquee: string[]
-  work: { title: string; sub: string; specLabel: string; stackLabel: string; cases: CaseItem[] }
+  work: {
+    title: string
+    sub: string
+    specLabel: string
+    stackLabel: string
+    flip: string
+    back: string
+    detailsLabel: string
+    featuresLabel: string
+    openLabel: string
+    cases: CaseItem[]
+  }
   manifesto: { title: string; items: { n: string; title: string; body: string; stamp: string }[] }
   footer: {
     contactSpec: string
@@ -78,9 +90,14 @@ const ru: Dict = {
   marquee: ['БЕЗ ПОСРЕДНИКОВ', 'MVP ЗА 3 НЕДЕЛИ', 'PRODUCTION GRADE', 'REALTIME', 'ЧИСТЫЙ КОД', 'ХВАТИТ СЛОВ'],
   work: {
     title: 'КЕЙСЫ',
-    sub: 'Три системы, которые работают в бою.',
+    sub: 'Четыре системы, которые работают в бою.',
     specLabel: 'ТЕХ. ХАРАКТЕРИСТИКИ',
     stackLabel: 'СТЕК',
+    flip: 'ПОДРОБНЕЕ',
+    back: 'НАЗАД',
+    detailsLabel: 'ПОДРОБНОСТИ',
+    featuresLabel: 'ЧТО ВНУТРИ',
+    openLabel: 'ОТКРЫТЬ ПРОЕКТ',
     cases: [
       {
         id: '01 // VN1MAN1E',
@@ -90,6 +107,15 @@ const ru: Dict = {
         specs: [['LATENCY', '0 ms'], ['SYNC', 'REALTIME'], ['LAYER', 'WEB APP']],
         tags: ['React', 'Supabase', 'Realtime'],
         badge: 'CRASH-TEST: PASSED',
+        details: {
+          lead: 'Ядро для интерактивных веб-продуктов, где всё происходит здесь и сейчас: действие одного участника мгновенно видят все остальные.',
+          points: [
+            'События доставляются всем клиентам в реальном времени',
+            'Общее состояние синхронизируется без перезагрузки страницы',
+            'Клиент на React, realtime-слой и данные на Supabase',
+            'Прошёл краш-тест перед запуском',
+          ],
+        },
       },
       {
         id: '02 // COFFEE OS',
@@ -99,6 +125,15 @@ const ru: Dict = {
         specs: [['MODEL', 'B2B'], ['COMPLIANCE', '54-ФЗ'], ['QUEUE', 'REALTIME']],
         tags: ['B2B', '54-ФЗ', 'Realtime Queue', 'KDS'],
         badge: 'CRASH-TEST: PASSED',
+        details: {
+          lead: 'Платформа для кофеен и общепита: гость оформляет предзаказ, а кухня видит его на экране и ведёт заказ до выдачи.',
+          points: [
+            'Меню и предзаказ для гостя',
+            'Экран кухни (KDS) с живой очередью заказов',
+            'Статус каждого заказа обновляется в реальном времени',
+            'Соответствие 54-ФЗ для B2B-клиентов',
+          ],
+        },
       },
       {
         id: '03 // GEO ENGINE',
@@ -108,6 +143,35 @@ const ru: Dict = {
         specs: [['MODE', 'ASYNC'], ['THROUGHPUT', 'HIGH'], ['OUTPUT', 'TELEGRAM']],
         tags: ['Python', 'Telegram Engine', 'Async'],
         badge: 'CRASH-TEST: PASSED',
+        details: {
+          lead: 'Сборщик данных розницы, рассчитанный на большой поток запросов: работает асинхронно и отдаёт результат прямо в Telegram.',
+          points: [
+            'Асинхронный сбор данных с высокой пропускной способностью',
+            'Результаты доставляются через Telegram-движок',
+            'Python и асинхронная архитектура',
+            'Прошёл краш-тест перед запуском',
+          ],
+        },
+      },
+      {
+        id: '04 // FINSYSTEM',
+        name: 'FINSYSTEM',
+        kind: 'Personal Finance Control System',
+        desc: 'Личная финансовая система: сколько денег свободно, что с долгами и какой платёж ближайший. Каждый приход сам делится по конвертам, а приложение ставится на телефон.',
+        specs: [['MODEL', 'PERSONAL'], ['SPLIT', '50/40/10'], ['LAYER', 'PWA']],
+        tags: ['PWA', 'Cloudflare', 'JSON Backup', 'Dark / Light'],
+        badge: 'CRASH-TEST: PASSED',
+        details: {
+          lead: 'Приложение, которое отвечает на главный вопрос про деньги: сколько можно потратить сегодня. Всё важное собрано на одном экране.',
+          points: [
+            'Главный экран: свободные деньги и лимит на день, ближайший платёж, прогресс по долгам, расходы за 7 дней',
+            'Разделы: деньги, долги, платежи, аналитика; операция добавляется одной кнопкой',
+            'Каждый новый приход делится по конвертам «Долги / Жизнь / Желания», по умолчанию 50/40/10, есть готовые пресеты',
+            'Резервная копия: выгрузка и копирование данных в JSON',
+            'Светлая, тёмная и системная тема; установка на телефон ярлыком на «Домой»',
+          ],
+          url: 'https://app-fin.risefame1.workers.dev/#dashboard',
+        },
       },
     ],
   },
@@ -162,9 +226,14 @@ const en: Dict = {
   marquee: ['NO MIDDLEMEN', 'MVP IN 3 WEEKS', 'PRODUCTION GRADE', 'REALTIME', 'CLEAN CODE', 'TALK IS CHEAP'],
   work: {
     title: 'WORK',
-    sub: 'Three systems running in the field.',
+    sub: 'Four systems running in the field.',
     specLabel: 'TECH SPECS',
     stackLabel: 'STACK',
+    flip: 'DETAILS',
+    back: 'BACK',
+    detailsLabel: 'DETAILS',
+    featuresLabel: "WHAT'S INSIDE",
+    openLabel: 'OPEN PROJECT',
     cases: [
       {
         id: '01 // VN1MAN1E',
@@ -174,6 +243,15 @@ const en: Dict = {
         specs: [['LATENCY', '0 ms'], ['SYNC', 'REALTIME'], ['LAYER', 'WEB APP']],
         tags: ['React', 'Supabase', 'Realtime'],
         badge: 'CRASH-TEST: PASSED',
+        details: {
+          lead: 'The core for interactive web products where everything happens right now: one participant acts, everyone else sees it instantly.',
+          points: [
+            'Events reach every client in real time',
+            'Shared state stays in sync with no page reloads',
+            'React client, with the realtime layer and data on Supabase',
+            'Passed a crash test before launch',
+          ],
+        },
       },
       {
         id: '02 // COFFEE OS',
@@ -183,6 +261,15 @@ const en: Dict = {
         specs: [['MODEL', 'B2B'], ['COMPLIANCE', '54-FZ'], ['QUEUE', 'REALTIME']],
         tags: ['B2B', '54-FZ', 'Realtime Queue', 'KDS'],
         badge: 'CRASH-TEST: PASSED',
+        details: {
+          lead: 'A platform for coffee shops and food service: the guest pre-orders, the kitchen sees it on screen and tracks the order through to pickup.',
+          points: [
+            'Guest menu and pre-ordering',
+            'Kitchen display (KDS) with a live order queue',
+            'Real-time status for every order',
+            '54-FZ fiscal compliance for B2B clients',
+          ],
+        },
       },
       {
         id: '03 // GEO ENGINE',
@@ -192,6 +279,35 @@ const en: Dict = {
         specs: [['MODE', 'ASYNC'], ['THROUGHPUT', 'HIGH'], ['OUTPUT', 'TELEGRAM']],
         tags: ['Python', 'Telegram Engine', 'Async'],
         badge: 'CRASH-TEST: PASSED',
+        details: {
+          lead: 'A retail data scraper built for heavy request volume: it runs asynchronously and delivers results straight to Telegram.',
+          points: [
+            'Async data collection with high throughput',
+            'Results delivered through a Telegram engine',
+            'Python and an async architecture',
+            'Passed a crash test before launch',
+          ],
+        },
+      },
+      {
+        id: '04 // FINSYSTEM',
+        name: 'FINSYSTEM',
+        kind: 'Personal Finance Control System',
+        desc: 'A personal finance system: how much money is free, where your debts stand and which payment is next. Every income splits into envelopes automatically, and the app installs on your phone.',
+        specs: [['MODEL', 'PERSONAL'], ['SPLIT', '50/40/10'], ['LAYER', 'PWA']],
+        tags: ['PWA', 'Cloudflare', 'JSON Backup', 'Dark / Light'],
+        badge: 'CRASH-TEST: PASSED',
+        details: {
+          lead: 'An app that answers the one question about money: how much can I spend today. Everything important sits on a single screen.',
+          points: [
+            'Home screen: free money and a daily limit, next payment, debt repayment progress, 7-day spending',
+            'Sections: money, debts, payments, analytics; add an operation with one button',
+            'Every new income splits into Debts / Life / Wishes envelopes, 50/40/10 by default, with ready-made presets',
+            'Backup: export and copy your data as JSON',
+            'Light, dark and system themes; installs to the phone home screen',
+          ],
+          url: 'https://app-fin.risefame1.workers.dev/#dashboard',
+        },
       },
     ],
   },
