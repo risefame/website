@@ -115,6 +115,7 @@ const ru: Dict = {
             'Клиент на React, realtime-слой и данные на Supabase',
             'Прошёл краш-тест перед запуском',
           ],
+          url: 'https://vn1man1e.pages.dev/',
         },
       },
       {
@@ -251,6 +252,7 @@ const en: Dict = {
             'React client, with the realtime layer and data on Supabase',
             'Passed a crash test before launch',
           ],
+          url: 'https://vn1man1e.pages.dev/',
         },
       },
       {
