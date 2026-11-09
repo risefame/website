@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
 import { useLang, type CaseItem, type Dict } from '../i18n'
 import { Barcode, CrashBadge, Spec } from './ui'
@@ -10,63 +10,27 @@ const THEMES = [
   { bg: 'bg-volt text-black', accent: 'text-black', tag: 'border-black', sub: 'text-black/70', rule: 'border-black' },
 ] as const
 
-/* ───────────────────────── CSS-эффекты (глитч, шаги, спрей) ───────────────────────── */
-
-const glitchFrames = (name: string) => `
-@keyframes ${name}{
-  0%{transform:translate(0,0) skewX(0);filter:none}
-  8%{transform:translate(-7px,2px) skewX(-5deg);filter:drop-shadow(6px 0 0 rgba(255,0,70,.9)) drop-shadow(-6px 0 0 rgba(0,235,255,.9))}
-  16%{transform:translate(6px,-3px) skewX(4deg);filter:drop-shadow(-5px 0 0 rgba(255,0,70,.9)) drop-shadow(5px 0 0 rgba(0,235,255,.9)) contrast(1.4)}
-  24%{transform:translate(0,0) skewX(0);filter:none}
-  38%{transform:translate(4px,1px) skewX(2deg);filter:hue-rotate(90deg) saturate(2)}
-  46%{transform:translate(-5px,-1px) skewX(-3deg);filter:drop-shadow(4px 0 0 rgba(255,0,70,.8)) drop-shadow(-4px 0 0 rgba(0,235,255,.8))}
-  54%{transform:translate(0,0);filter:none}
-  70%{transform:translate(-3px,0) skewX(1.5deg);filter:brightness(1.6) contrast(1.3)}
-  74%{transform:translate(0,0);filter:none}
-  100%{transform:translate(0,0) skewX(0);filter:none}
-}`
+/* ───────────────────────── CSS: шаги человечка и спрей ───────────────────────── */
 
 const CSS = `
-${glitchFrames('rf-glitch-a')}
-${glitchFrames('rf-glitch-b')}
-.rf-gl-1{animation:rf-glitch-a .8s steps(1,end) 1}
-.rf-gl-2{animation:rf-glitch-b .8s steps(1,end) 1}
-@keyframes rf-bar{
-  0%{opacity:0;transform:translateX(-40%)}
-  15%{opacity:1;transform:translateX(12%)}
-  30%{opacity:0}
-  45%{opacity:1;transform:translateX(-10%)}
-  60%{opacity:0}
-  75%{opacity:.9;transform:translateX(25%)}
-  100%{opacity:0;transform:translateX(50%)}
-}
-.rf-bar{animation:rf-bar .8s steps(1,end) both}
 @keyframes rf-step{from{transform:rotate(28deg)}to{transform:rotate(-28deg)}}
 .rf-leg-a{animation:rf-step .28s ease-in-out infinite alternate}
 .rf-leg-b{animation:rf-step .28s ease-in-out infinite alternate-reverse}
 @keyframes rf-spray{
   0%{opacity:0;transform:translate(0,0)}
   30%{opacity:1}
-  100%{opacity:0;transform:translate(7px,-6px)}
+  100%{opacity:0;transform:translate(9px,-3px)}
 }
 .rf-spray{animation:rf-spray .5s linear infinite}
 @media (prefers-reduced-motion:reduce){
-  .rf-gl-1,.rf-gl-2,.rf-leg-a,.rf-leg-b,.rf-spray{animation:none!important}
-  .rf-bar{display:none}
+  .rf-leg-a,.rf-leg-b,.rf-spray{animation:none!important}
 }`
 
-const BARS = [
-  { top: '12%', h: 10, c: '#ffffff', d: '0s' },
-  { top: '38%', h: 5, c: '#ff0046', d: '.08s' },
-  { top: '61%', h: 14, c: '#00ebff', d: '.16s' },
-  { top: '84%', h: 7, c: '#ffffff', d: '.24s' },
-]
+/* ───────────────────────── «Помятость» (только пока карточка перевёрнута) ───────────────────────── */
 
-/* ───────────────────────── «Помятость» карточки ───────────────────────── */
-
-function Wear({ wear, i }: { wear: number; i: number }) {
+function Wear({ on, i }: { on: boolean; i: number }) {
   const a = (i * 17) % 40
-  const s = wear === 0 ? 0 : 12 + wear * 9
+  const s = on ? 40 : 0
   return (
     <>
       {/* складки */}
@@ -74,7 +38,7 @@ function Wear({ wear, i }: { wear: number; i: number }) {
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 transition-opacity duration-700"
         style={{
-          opacity: wear === 0 ? 0 : Math.min(0.2 + wear * 0.13, 0.85),
+          opacity: on ? 0.6 : 0,
           background: [
             `linear-gradient(${115 + a}deg, transparent 38%, rgba(0,0,0,.3) 38.4%, rgba(255,255,255,.2) 39%, transparent 39.6%)`,
             `linear-gradient(${72 - a}deg, transparent 61%, rgba(255,255,255,.2) 61.3%, rgba(0,0,0,.3) 62%, transparent 62.6%)`,
@@ -97,54 +61,158 @@ function Wear({ wear, i }: { wear: number; i: number }) {
   )
 }
 
-/* ───────────────────────── Человечек и граффити ───────────────────────── */
+/* ───────────────────────── Граффити: у каждого кейса своя сцена ───────────────────────── */
 
-interface Piece { stand: number; paths: string[] }
+interface Piece {
+  stand: number // где стоит человечек (x)
+  at: [number, number] // куда направлена рука (центр рисунка)
+  paths: string[]
+}
+interface Scene {
+  enter: 'l' | 'r'
+  exit: 'l' | 'r'
+  pieces: Piece[]
+}
 
-// viewBox 400 x 150, земля на y = 146
-const GROUND = 146
-const PIECES: Piece[] = [
-  // звезда
-  { stand: 62, paths: ['M62 30 L70 52 L94 53 L75 67 L82 90 L62 76 L42 90 L49 67 L30 53 L54 52 Z'] },
-  // тег «RF»
+// холст 400 x 170, земля на y = 166
+const GROUND = 166
+
+const SCENES: Scene[] = [
+  // 01 — приходит слева, рисует звезду, молнию, смайл и стрелку; уходит вправо
   {
-    stand: 168,
-    paths: [
-      'M122 90 V34 H146 Q164 34 164 50 Q164 66 146 66 H122 M146 66 L166 90',
-      'M184 90 V34 H214 M184 60 H208',
+    enter: 'l',
+    exit: 'r',
+    pieces: [
+      { stand: 38, at: [70, 52], paths: ['M70 24 L78 44 L100 45 L83 58 L89 80 L70 67 L51 80 L57 58 L40 45 L62 44 Z'] },
+      { stand: 195, at: [153, 54], paths: ['M158 18 L134 58 H152 L142 90 L172 50 H154 Z'] },
+      {
+        stand: 250,
+        at: [290, 60],
+        paths: ['M290 36 a24 24 0 1 1 0 48 a24 24 0 1 1 0 -48', 'M281 53 V57 M299 53 V57', 'M279 68 Q290 79 301 68'],
+      },
+      { stand: 318, at: [355, 138], paths: ['M335 138 H375 M362 126 L376 138 L362 150'] },
     ],
   },
-  // смайл
+  // 02 — приходит справа, рисует чашку, корону, глаз и крестик; уходит влево
   {
-    stand: 272,
-    paths: ['M272 38 a24 24 0 1 1 0 48 a24 24 0 1 1 0 -48', 'M263 55 V59 M281 55 V59', 'M261 70 Q272 81 283 70'],
+    enter: 'r',
+    exit: 'l',
+    pieces: [
+      {
+        stand: 368,
+        at: [336, 70],
+        paths: [
+          'M312 50 H352 V80 Q352 98 332 98 Q312 98 312 80 Z',
+          'M352 58 Q368 58 368 72 Q368 84 352 84',
+          'M324 42 Q318 34 324 26 M338 42 Q332 34 338 26',
+        ],
+      },
+      { stand: 272, at: [210, 60], paths: ['M180 82 L184 42 L198 62 L210 36 L222 62 L236 42 L240 82 Z'] },
+      {
+        stand: 168,
+        at: [110, 60],
+        paths: ['M70 60 Q110 25 150 60 Q110 95 70 60 Z', 'M110 50 a10 10 0 1 1 0 20 a10 10 0 1 1 0 -20'],
+      },
+      { stand: 88, at: [40, 136], paths: ['M22 120 L56 152 M56 120 L22 152'] },
+    ],
   },
-  // молния
-  { stand: 350, paths: ['M352 28 L330 66 H348 L338 98 L368 56 H350 Z'] },
+  // 03 — приходит слева, рисует пин, глобус, радар и стрелку вниз; уходит вправо
+  {
+    enter: 'l',
+    exit: 'r',
+    pieces: [
+      {
+        stand: 108,
+        at: [60, 62],
+        paths: ['M60 100 C34 72 38 34 60 34 C82 34 86 72 60 100 Z', 'M60 54 a7 7 0 1 1 0 14 a7 7 0 1 1 0 -14'],
+      },
+      {
+        stand: 160,
+        at: [205, 70],
+        paths: [
+          'M205 42 a28 28 0 1 1 0 56 a28 28 0 1 1 0 -56',
+          'M205 42 Q181 70 205 98 Q229 70 205 42',
+          'M177 70 H233',
+        ],
+      },
+      {
+        stand: 272,
+        at: [330, 50],
+        paths: ['M316 68 Q330 54 344 68', 'M304 58 Q330 34 356 58', 'M292 48 Q330 14 368 48'],
+      },
+      { stand: 330, at: [372, 136], paths: ['M372 118 V152 M358 138 L372 152 L386 138'] },
+    ],
+  },
+  // 04 — приходит справа, рисует ₽, график, монету и процент; уходит влево
+  {
+    enter: 'r',
+    exit: 'l',
+    pieces: [
+      {
+        stand: 288,
+        at: [332, 70],
+        paths: ['M314 100 V40 H338 Q358 40 358 58 Q358 76 338 76 H308 M308 90 H342'],
+      },
+      {
+        stand: 262,
+        at: [190, 70],
+        paths: ['M150 110 V30 M150 110 H240', 'M160 95 L185 75 L205 85 L235 45', 'M222 44 H236 V58'],
+      },
+      {
+        stand: 132,
+        at: [80, 60],
+        paths: ['M80 34 a26 26 0 1 1 0 52 a26 26 0 1 1 0 -52', 'M80 46 a14 14 0 1 1 0 28 a14 14 0 1 1 0 -28'],
+      },
+      {
+        stand: 100,
+        at: [44, 138],
+        paths: [
+          'M30 118 a7 7 0 1 1 0 14 a7 7 0 1 1 0 -14',
+          'M58 144 a7 7 0 1 1 0 14 a7 7 0 1 1 0 -14',
+          'M64 114 L24 160',
+        ],
+      },
+    ],
+  },
 ]
 
 type Phase = 'idle' | 'walk' | 'draw' | 'gone'
 
-function GraffitiWall({ active, reduce, className }: { active: boolean; reduce: boolean | null; className: string }) {
+function GraffitiWall({
+  active,
+  reduce,
+  scene,
+  className,
+}: {
+  active: boolean
+  reduce: boolean | null
+  scene: Scene
+  className: string
+}) {
   const [drawn, setDrawn] = useState(0)
-  const [x, setX] = useState(-40)
-  const [dir, setDir] = useState<1 | -1>(1)
+  const [target, setTarget] = useState(0)
+  const [x, setX] = useState(scene.enter === 'l' ? -40 : 440)
+  const [dir, setDir] = useState<1 | -1>(scene.enter === 'l' ? 1 : -1)
+  const [dur, setDur] = useState(0.9)
   const [phase, setPhase] = useState<Phase>('idle')
 
   useEffect(() => {
+    const startX = scene.enter === 'l' ? -40 : 440
+
     if (!active) {
-      // сбрасываем стену, когда оборот уже скрыт
+      // стену очищаем, когда оборот уже скрыт
       const id = window.setTimeout(() => {
         setDrawn(0)
-        setX(-40)
-        setDir(1)
+        setTarget(0)
+        setX(startX)
+        setDir(scene.enter === 'l' ? 1 : -1)
         setPhase('idle')
       }, 900)
       return () => window.clearTimeout(id)
     }
 
     if (reduce) {
-      setDrawn(PIECES.length)
+      setDrawn(scene.pieces.length)
       setPhase('gone')
       return
     }
@@ -153,42 +221,60 @@ function GraffitiWall({ active, reduce, className }: { active: boolean; reduce: 
     const wait = (ms: number) => new Promise<void>((r) => window.setTimeout(r, ms))
 
     void (async () => {
-      let cur = -40
+      let cur = startX
       await wait(900)
-      for (let k = 0; k < PIECES.length; k++) {
+      for (let k = 0; k < scene.pieces.length; k++) {
         if (dead) return
-        const tx = PIECES[k].stand
-        setDir(tx >= cur ? 1 : -1)
-        cur = tx
+        const { stand, at, paths } = scene.pieces[k]
+        const ms = Math.max(600, Math.min(1500, Math.abs(stand - cur) * 6))
+        setDir(stand >= cur ? 1 : -1)
         setPhase('walk')
-        setX(tx)
-        await wait(950)
+        setDur(ms / 1000)
+        setX(stand)
+        cur = stand
+        await wait(ms + 50)
         if (dead) return
+        setDir(at[0] >= stand ? 1 : -1) // поворачиваемся лицом к рисунку
+        setTarget(k)
         setPhase('draw')
         setDrawn(k + 1)
-        await wait(1250)
+        await wait(1250 + (paths.length - 1) * 250)
       }
       if (dead) return
-      setDir(1)
+      const exitX = scene.exit === 'l' ? -40 : 440
+      const ms = Math.max(700, Math.min(1500, Math.abs(exitX - cur) * 6))
+      setDir(exitX >= cur ? 1 : -1)
       setPhase('walk')
-      setX(450)
-      await wait(1100)
+      setDur(ms / 1000)
+      setX(exitX)
+      await wait(ms + 50)
       if (!dead) setPhase('gone')
     })()
 
     return () => {
       dead = true
     }
-  }, [active, reduce])
+  }, [active, reduce, scene])
 
   const walking = phase === 'walk'
   const drawing = phase === 'draw'
   const legStyle = { transformBox: 'fill-box', transformOrigin: '50% 0%' } as const
 
+  // рука тянется к тому месту, где рисуем
+  const [ax, ay] = scene.pieces[target].at
+  const lx = (ax - x) * dir - 4
+  const ly = ay - (GROUND - 23)
+  const len = Math.hypot(lx, ly) || 1
+  const ux = lx / len
+  const uy = ly / len
+  const tipX = 4 + ux * 17
+  const tipY = -23 + uy * 17
+  const deg = (Math.atan2(uy, ux) * 180) / Math.PI
+
   return (
-    <div aria-hidden="true" className={`pointer-events-none relative mt-6 min-h-[9rem] flex-1 ${className}`}>
+    <div aria-hidden="true" className={`pointer-events-none relative mt-6 min-h-[10rem] flex-1 ${className}`}>
       <svg
-        viewBox="0 0 400 150"
+        viewBox="0 0 400 170"
         preserveAspectRatio="xMidYMax meet"
         className="absolute inset-0 h-full w-full"
         fill="none"
@@ -197,7 +283,7 @@ function GraffitiWall({ active, reduce, className }: { active: boolean; reduce: 
         strokeLinecap="round"
         strokeLinejoin="round"
       >
-        {PIECES.map((p, k) =>
+        {scene.pieces.map((p, k) =>
           p.paths.map((d, n) => (
             <motion.path
               key={`${k}-${n}`}
@@ -220,7 +306,7 @@ function GraffitiWall({ active, reduce, className }: { active: boolean; reduce: 
         <motion.g
           initial={false}
           animate={{ x, y: GROUND }}
-          transition={{ duration: walking ? 0.95 : 0, ease: 'linear' }}
+          transition={{ duration: walking ? dur : 0, ease: 'linear' }}
         >
           <g transform={`scale(${dir} 1)`}>
             <g className={walking ? 'rf-leg-a' : ''} style={legStyle}>
@@ -236,17 +322,17 @@ function GraffitiWall({ active, reduce, className }: { active: boolean; reduce: 
             <line
               x1={4}
               y1={-23}
-              x2={drawing ? 15 : 8}
-              y2={drawing ? -39 : -12}
+              x2={drawing ? tipX : 8}
+              y2={drawing ? tipY : -12}
               stroke="currentColor"
               strokeWidth={4}
             />
             {drawing && (
-              <g fill="currentColor" stroke="none">
-                <rect x={12} y={-48} width={6} height={9} rx={1.5} />
-                <circle className="rf-spray" cx={22} cy={-46} r={1.6} />
-                <circle className="rf-spray" cx={24} cy={-43} r={1.4} style={{ animationDelay: '.15s' }} />
-                <circle className="rf-spray" cx={21} cy={-50} r={1.2} style={{ animationDelay: '.3s' }} />
+              <g transform={`translate(${tipX} ${tipY}) rotate(${deg})`} fill="currentColor" stroke="none">
+                <rect x={-1} y={-3.5} width={9} height={7} rx={1.5} />
+                <circle className="rf-spray" cx={11} cy={0} r={1.6} />
+                <circle className="rf-spray" cx={13} cy={-2.5} r={1.3} style={{ animationDelay: '.15s' }} />
+                <circle className="rf-spray" cx={13} cy={2.5} r={1.2} style={{ animationDelay: '.3s' }} />
               </g>
             )}
           </g>
@@ -265,25 +351,10 @@ function Card({ c, i, w }: { c: CaseItem; i: number; w: Dict['work'] }) {
   const th = THEMES[i % THEMES.length]
   const reduce = useReducedMotion()
   const [flipped, setFlipped] = useState(false)
-  const [flips, setFlips] = useState(0)
-  const [glitch, setGlitch] = useState<0 | 1 | 2>(0)
-  const timer = useRef<number | undefined>(undefined)
+  const toggle = () => setFlipped((f) => !f)
 
-  useEffect(() => () => window.clearTimeout(timer.current), [])
-
-  const toggle = () => {
-    setFlipped((f) => !f)
-    setFlips((n) => n + 1)
-    if (!reduce) {
-      setGlitch((g) => (g === 1 ? 2 : 1))
-      window.clearTimeout(timer.current)
-      timer.current = window.setTimeout(() => setGlitch(0), 850)
-    }
-  }
-
-  const wear = Math.min(flips, 5)
-  const tilt = wear * (i % 2 ? 0.2 : -0.2)
-  const glitchClass = glitch === 1 ? 'rf-gl-1' : glitch === 2 ? 'rf-gl-2' : ''
+  // небольшой перекос карточки, только пока она перевёрнута
+  const tilt = flipped ? (i % 2 ? 0.5 : -0.5) : 0
 
   return (
     <motion.div
@@ -295,8 +366,8 @@ function Card({ c, i, w }: { c: CaseItem; i: number; w: Dict['work'] }) {
       className="relative"
     >
       <div
-        className={`relative [perspective:2200px] ${glitchClass}`}
-        style={{ transform: `rotate(${tilt}deg)`, transition: 'transform .6s ease' }}
+        className="relative [perspective:2200px]"
+        style={{ transform: `rotate(${tilt}deg)`, transition: 'transform .7s ease' }}
       >
         <motion.article
           onClick={toggle}
@@ -360,7 +431,6 @@ function Card({ c, i, w }: { c: CaseItem; i: number; w: Dict['work'] }) {
                 <Barcode seed={i * 5 + 3} className="h-7 w-32" />
               </div>
             </div>
-            <Wear wear={wear} i={i} />
           </div>
 
           {/* ───────── ОБРАТНАЯ СТОРОНА ───────── */}
@@ -392,8 +462,13 @@ function Card({ c, i, w }: { c: CaseItem; i: number; w: Dict['work'] }) {
                   </a>
                 )}
 
-                {/* стена для граффити */}
-                <GraffitiWall active={flipped} reduce={reduce} className={th.accent} />
+                {/* стена для граффити: у каждого кейса своя сцена */}
+                <GraffitiWall
+                  active={flipped}
+                  reduce={reduce}
+                  scene={SCENES[i % SCENES.length]}
+                  className={th.accent}
+                />
               </div>
 
               <div>
@@ -422,22 +497,11 @@ function Card({ c, i, w }: { c: CaseItem; i: number; w: Dict['work'] }) {
                 <Barcode seed={i * 5 + 3} className="h-7 w-32" />
               </div>
             </div>
-            <Wear wear={wear} i={i} />
+
+            {/* помятость: есть только на перевёрнутой стороне */}
+            <Wear on={flipped} i={i} />
           </div>
         </motion.article>
-
-        {/* глитч-полосы поверх карточки на время переворота */}
-        {glitch !== 0 && (
-          <div key={glitch} aria-hidden="true" className="pointer-events-none absolute inset-0 z-10 overflow-hidden">
-            {BARS.map((b) => (
-              <span
-                key={b.top}
-                className="rf-bar absolute left-0 w-full"
-                style={{ top: b.top, height: b.h, background: b.c, mixBlendMode: 'difference', animationDelay: b.d }}
-              />
-            ))}
-          </div>
-        )}
       </div>
     </motion.div>
   )
