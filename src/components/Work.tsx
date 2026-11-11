@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
 import { useLang, type CaseItem, type Dict } from '../i18n'
 import { Barcode, CrashBadge, Spec } from './ui'
@@ -345,13 +345,54 @@ function GraffitiWall({
 /* ───────────────────────── Карточка ───────────────────────── */
 
 const FACE =
-  'relative col-start-1 row-start-1 border-4 border-black outline outline-2 outline-white/20 [backface-visibility:hidden] [-webkit-backface-visibility:hidden]'
+  'border-4 border-black outline outline-2 outline-white/20 [backface-visibility:hidden] [-webkit-backface-visibility:hidden]'
+
+// true на телефонах (< 768px)
+function useMobile() {
+  const query = '(max-width: 767px)'
+  const [m, setM] = useState(() => typeof window !== 'undefined' && window.matchMedia(query).matches)
+  useEffect(() => {
+    const mq = window.matchMedia(query)
+    const on = () => setM(mq.matches)
+    on()
+    mq.addEventListener('change', on)
+    return () => mq.removeEventListener('change', on)
+  }, [])
+  return m
+}
 
 function Card({ c, i, w }: { c: CaseItem; i: number; w: Dict['work'] }) {
   const th = THEMES[i % THEMES.length]
   const reduce = useReducedMotion()
   const [flipped, setFlipped] = useState(false)
   const toggle = () => setFlipped((f) => !f)
+
+  // На телефоне у каждой стороны своя высота, карточка плавно подстраивается под активную сторону.
+  // На ПК обе стороны лежат в одной ячейке grid (как раньше).
+  const mobile = useMobile()
+  const frontRef = useRef<HTMLDivElement>(null)
+  const backRef = useRef<HTMLDivElement>(null)
+  const [fh, setFh] = useState(0)
+  const [bh, setBh] = useState(0)
+
+  useLayoutEffect(() => {
+    if (!mobile) return
+    const f = frontRef.current
+    const b = backRef.current
+    if (!f || !b) return
+    const measure = () => {
+      setFh(f.offsetHeight)
+      setBh(b.offsetHeight)
+    }
+    measure()
+    const ro = new ResizeObserver(measure)
+    ro.observe(f)
+    ro.observe(b)
+    return () => ro.disconnect()
+  }, [mobile])
+
+  const face = mobile ? 'absolute left-0 top-0 w-full' : 'relative col-start-1 row-start-1'
+  const mobileHeight = mobile ? (flipped ? bh : fh) || undefined : undefined
 
   // небольшой перекос карточки, только пока она перевёрнута
   const tilt = flipped ? (i % 2 ? 0.5 : -0.5) : 0
@@ -373,17 +414,22 @@ function Card({ c, i, w }: { c: CaseItem; i: number; w: Dict['work'] }) {
           onClick={toggle}
           animate={{ rotateY: flipped ? 180 : 0 }}
           transition={reduce ? { duration: 0 } : { duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
-          style={{ transformStyle: 'preserve-3d' }}
-          className="relative grid cursor-pointer"
+          style={{
+            transformStyle: 'preserve-3d',
+            height: mobileHeight,
+            transition: mobile ? 'height .7s ease' : undefined,
+          }}
+          className={`relative cursor-pointer ${mobile ? 'block' : 'grid'}`}
         >
           {/* ───────── ЛИЦЕВАЯ СТОРОНА ───────── */}
           <div
-            className={`${FACE} flex flex-col ${th.bg}`}
+            ref={frontRef}
+            className={`${face} ${FACE} flex flex-col ${th.bg}`}
             aria-hidden={flipped}
             style={{ pointerEvents: flipped ? 'none' : 'auto' }}
           >
             <div className="hazard-thin h-2 w-full" aria-hidden="true" />
-            <div className="grid flex-1 gap-8 p-5 md:grid-cols-[1.4fr_1fr] md:p-10">
+            <div className="grid flex-1 gap-6 p-5 md:grid-cols-[1.4fr_1fr] md:gap-8 md:p-10">
               <div>
                 <div className="mb-5 flex flex-wrap items-center gap-3">
                   <Spec className={th.accent}>{c.id}</Spec>
@@ -418,7 +464,7 @@ function Card({ c, i, w }: { c: CaseItem; i: number; w: Dict['work'] }) {
             </div>
 
             <div className={`flex items-center justify-between gap-4 border-t-2 px-5 py-3 md:px-10 ${th.rule}`}>
-              <Spec>[RF-SPEC // 2026]</Spec>
+              <Spec className="whitespace-nowrap">[RF-SPEC // 2026]</Spec>
               <div className="flex items-center gap-4">
                 <button
                   type="button"
@@ -428,19 +474,20 @@ function Card({ c, i, w }: { c: CaseItem; i: number; w: Dict['work'] }) {
                 >
                   {w.flip} <span aria-hidden="true">↻</span>
                 </button>
-                <Barcode seed={i * 5 + 3} className="h-7 w-32" />
+                <Barcode seed={i * 5 + 3} className="hidden h-7 w-32 sm:block" />
               </div>
             </div>
           </div>
 
           {/* ───────── ОБРАТНАЯ СТОРОНА ───────── */}
           <div
-            className={`${FACE} flex flex-col ${th.bg}`}
+            ref={backRef}
+            className={`${face} ${FACE} flex flex-col ${th.bg}`}
             aria-hidden={!flipped}
             style={{ transform: 'rotateY(180deg)', pointerEvents: flipped ? 'auto' : 'none' }}
           >
             <div className="hazard-thin h-2 w-full" aria-hidden="true" />
-            <div className="grid flex-1 gap-8 p-5 md:grid-cols-[1fr_1.1fr] md:p-10">
+            <div className="grid flex-1 gap-6 p-5 md:grid-cols-[1fr_1.1fr] md:gap-8 md:p-10">
               <div className="flex flex-col">
                 <div className="mb-5 flex flex-wrap items-center gap-3">
                   <Spec className={th.accent}>{c.id}</Spec>
@@ -485,7 +532,7 @@ function Card({ c, i, w }: { c: CaseItem; i: number; w: Dict['work'] }) {
             </div>
 
             <div className={`flex items-center justify-between gap-4 border-t-2 px-5 py-3 md:px-10 ${th.rule}`}>
-              <Spec>[RF-SPEC // 2026]</Spec>
+              <Spec className="whitespace-nowrap">[RF-SPEC // 2026]</Spec>
               <div className="flex items-center gap-4">
                 <button
                   type="button"
@@ -494,7 +541,7 @@ function Card({ c, i, w }: { c: CaseItem; i: number; w: Dict['work'] }) {
                 >
                   <span aria-hidden="true">↺</span> {w.back}
                 </button>
-                <Barcode seed={i * 5 + 3} className="h-7 w-32" />
+                <Barcode seed={i * 5 + 3} className="hidden h-7 w-32 sm:block" />
               </div>
             </div>
 
